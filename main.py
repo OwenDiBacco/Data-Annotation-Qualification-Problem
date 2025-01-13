@@ -15,21 +15,24 @@ def extract_doc_id(url):
     return match.group(1) if match else None
 
 def decode_secret_message(doc_url):
-    # Get credentials and build service
-    creds = get_credentials()
-    service = build('docs', 'v1', credentials=creds)
+    try:
+        # Get credentials and build service
+        creds = get_credentials()
+        service = build('docs', 'v1', credentials=creds)
 
-    # Extract document ID from URL
-    doc_id = extract_doc_id(doc_url)
-    if not doc_id:
-        raise ValueError("Invalid Google Docs URL")
+        # Extract document ID from URL
+        doc_id = extract_doc_id(doc_url)
+        if not doc_id:
+            raise ValueError("Invalid Google Docs URL")
 
-    # Get the document content
-    document = service.documents().get(documentId=doc_id).execute()
+        # Get the document content
+        document = service.documents().get(documentId=doc_id).execute()
+        if not document:
+            raise ValueError("Could not access document")
 
-    # Parse the content to get coordinates and characters
-    grid_points = []
-    content = document.get('body').get('content')
+        # Parse the content to get coordinates and characters
+        grid_points = []
+        content = document.get('body', {}).get('content', [])
     
     print("Reading document content:")
     for element in content:
@@ -73,8 +76,15 @@ def decode_secret_message(doc_url):
         grid[y][x] = char
 
     # Print the grid
-    for row in grid:
-        print(''.join(row))
+        for row in grid:
+            print(''.join(row))
+            
+    except ValueError as e:
+        print(f"Error: {str(e)}")
+    except Exception as e:
+        print(f"Unexpected error occurred: {str(e)}")
+    finally:
+        print("Document processing completed")
 
 if __name__ == "__main__":
     # Example usage
