@@ -49,6 +49,11 @@ def decode_secret_message(doc_url):
             except (ValueError, IndexError):
                 continue
 
+    # Check if we have any valid points
+    if not grid_points:
+        print("No valid coordinates found in the document.")
+        return
+
     # Find grid dimensions
     max_x = max(point[0] for point in grid_points) + 1
     max_y = max(point[1] for point in grid_points) + 1
