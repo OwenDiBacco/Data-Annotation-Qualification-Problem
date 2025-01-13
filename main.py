@@ -39,16 +39,15 @@ def print_document_cells(doc_url):
 
         # Print content from each paragraph
         content = document.get('body', {}).get('content', [])
-        # print("Document contents: ", content)
-        table = content['element']['table']
-        for row in table['tableRows']:
-            for cell in row['tableCells']:
-                for paragraph in cell['content']:
-                    for element in paragraph['elements']:
-                        if 'textRun' in element:
-                            text_run = element['textRun']
-                            cell_text = text_run['content']
-                            print(cell_text)
+        for struct in content:
+            if 'table' in struct:
+                table = struct['table']
+                for row in table.get('tableRows', []):
+                    for cell in row.get('tableCells', []):
+                        for content_item in cell.get('content', []):
+                            for element in content_item.get('paragraph', {}).get('elements', []):
+                                if 'textRun' in element:
+                                    print(element['textRun']['content'].strip())
 
     except Exception as e:
         print(f"Error: {str(e)}")
