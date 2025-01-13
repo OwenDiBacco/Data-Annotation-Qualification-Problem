@@ -45,13 +45,22 @@ def decode_secret_message(doc_url):
                     if not paragraph.strip():
                         continue
 
-                    # Parse coordinates and character
-                    parts = paragraph.strip().split()
-                    if len(parts) >= 3:
-                        x = int(parts[0])
-                        y = int(parts[1])
-                        char = parts[2]
-                        grid_points.append((x, y, char))
+                    # Parse line for coordinates and character
+                    line = paragraph.strip()
+                    parts = line.split('|')
+                    parts = [p.strip() for p in parts if p.strip()]
+                    
+                    # Process each coordinate set in the line
+                    for i in range(0, len(parts), 3):
+                        if i + 2 < len(parts):
+                            try:
+                                x = int(parts[i])
+                                char = parts[i + 1]
+                                y = int(parts[i + 2])
+                                grid_points.append((x, y, char))
+                            except (ValueError, IndexError) as e:
+                                print(f"Error parsing coordinate set: {e}")
+                                continue
                 except (ValueError, IndexError) as e:
                     print(f"Error parsing line: {e}")
                     continue
