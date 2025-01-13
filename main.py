@@ -47,6 +47,9 @@ def decode_secret_message(doc_url):
 
                     # Parse line for coordinates and character
                     line = paragraph.strip()
+                    if not any(c in line for c in ['█', '▀']):  # Skip header lines
+                        continue
+                        
                     parts = line.split('|')
                     parts = [p.strip() for p in parts if p.strip()]
                     
@@ -54,10 +57,12 @@ def decode_secret_message(doc_url):
                     for i in range(0, len(parts), 3):
                         if i + 2 < len(parts):
                             try:
-                                x = int(parts[i])
-                                char = parts[i + 1]
-                                y = int(parts[i + 2])
-                                grid_points.append((x, y, char))
+                                x = int(parts[i].strip())
+                                char = parts[i + 1].strip()
+                                y = int(parts[i + 2].strip())
+                                if char in ['█', '▀']:  # Only accept valid characters
+                                    grid_points.append((x, y, char))
+                                    print(f"Added point: ({x}, {y}, {char})")
                             except (ValueError, IndexError) as e:
                                 print(f"Error parsing coordinate set: {e}")
                                 continue
