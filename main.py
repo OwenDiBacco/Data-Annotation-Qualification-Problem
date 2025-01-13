@@ -40,16 +40,23 @@ def decode_secret_message(doc_url):
             if 'paragraph' in element:
                 try:
                     paragraph = element.get('paragraph').get('elements')[0].get('textRun').get('content')
-                    print(f"Found line: {paragraph.strip()}")
-                    # Skip empty lines
-                    if not paragraph.strip():
-                        continue
-
-                    # Parse line for coordinates and character
                     line = paragraph.strip()
-                    if not any(c in line for c in ['█', '▀']):  # Skip header lines
+                    
+                    # Print raw cell data
+                    if line:
+                        print(f"\nRaw line: {line}")
+                        parts = line.split('|')
+                        parts = [p.strip() for p in parts if p.strip()]
+                        print(f"Cells: {parts}")
+                    
+                    # Skip empty lines
+                    if not line:
                         continue
                         
+                    # Skip lines without our special characters
+                    if not any(c in line for c in ['█', '▀']):
+                        continue
+                    
                     parts = line.split('|')
                     parts = [p.strip() for p in parts if p.strip()]
                     
