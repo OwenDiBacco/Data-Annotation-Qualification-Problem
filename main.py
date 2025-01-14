@@ -37,8 +37,8 @@ def get_document_cells(doc_id):
 
 
 def display_code(cell_contents):
-    max_x = max(cell_contents[i] for i in range(0, len(cell_contents), 3))
-    max_y = max(cell_contents[i + 2] for i in range(0, len(cell_contents), 3))
+    max_x = max(int(cell_contents[i]) for i in range(0, len(cell_contents), 3))
+    max_y = max(int(cell_contents[i + 2]) for i in range(0, len(cell_contents), 3))
 
     print(max_x, ' ', max_y)
     
