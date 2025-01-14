@@ -46,8 +46,8 @@ def display_code(cell_contents):
     # result = [[' ' for _ in range(max_x + 1)] * max_y]
 
     for i in range(0, len(cell_contents), 3):
-        x = cell_contents[i]  
-        y = cell_contents[i + 2]  
+        x = int(cell_contents[i])  
+        y = int(cell_contents[i + 2])  
         content = cell_contents[i + 1]
         result[y][x] = content
 
