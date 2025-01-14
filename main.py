@@ -1,6 +1,5 @@
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
-import re
 
 SCOPES = ['https://www.googleapis.com/auth/documents.readonly']
 
@@ -38,13 +37,10 @@ def get_document_cells(doc_id):
 
 def display_code(cell_contents):
     max_x = max(int(cell_contents[i]) for i in range(0, len(cell_contents), 3))
-    max_y = max(int(cell_contents[i + 2]) for i in range(0, len(cell_contents), 3))
-
-    print(max_x, ' ', max_y)
+    max_y = max(int(cell_contents[i + 2]) for i in range(0, len(cell_contents), 3)) 
     
     result = [[' ' for _ in range(max_x + 1)] for _ in range(max_y + 1)] 
-    # result = [[' ' for _ in range(max_x + 1)] * max_y]
-
+    
     for i in range(0, len(cell_contents), 3):
         x = int(cell_contents[i])  
         y = int(cell_contents[i + 2])  
@@ -53,7 +49,14 @@ def display_code(cell_contents):
 
     return result
 
+
+def print_code(code):
+    for row in code:
+        print(''.join(str(item) if item != ' ' else ' ' for item in row)) 
+        
+
 if __name__ == "__main__":
     cell_contents = get_document_cells('1TLfFu_HQ8uvIYyrfFuiWWUxb6yRTxG5cKW_NciGCefs')
     code = display_code(cell_contents)
-    print(code)
+    print_code(code)
+    
