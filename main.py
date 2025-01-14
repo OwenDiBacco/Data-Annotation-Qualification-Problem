@@ -10,48 +10,50 @@ def get_credentials():
         scopes=SCOPES
     )
 
-def extract_doc_id(url):
-    match = re.search(r'/document/d/([a-zA-Z0-9-_]+)', url)
-    return match.group(1) if match else None
 
-
-def connect_to_document(doc_url):
+def connect_to_document(doc_id):
     creds = get_credentials()
     service = build('docs', 'v1', credentials=creds)
-
-    # Extract document ID from URL
-    doc_id = extract_doc_id(doc_url)
-    if not doc_id:
-        raise ValueError("Invalid Google Docs URL")
-
-    # Get the document content
     document = service.documents().get(documentId=doc_id).execute()
-    if not document:
-        raise ValueError("Could not access document")
-
     return document
 
 
-def print_document_cells(doc_url):
-    try:
-        # Get credentials and build service
-        document = connect_to_document(doc_url)
+def get_document_cells(doc_id):
+    document = connect_to_document(doc_id)
+    content = document.get('body', {}).get('content', [])
+    cell_contents = []
+    for struct in content:
+        if 'table' in struct:
+            table = struct['table']
+            for row in table.get('tableRows', []):
+                for cell in row.get('tableCells', []):
+                    for content_item in cell.get('content', []):
+                        for element in content_item.get('paragraph', {}).get('elements', []):
+                            if 'textRun' in element:
+                                cell_contents.append(element['textRun']['content'].strip())
+                                
+    cell_contents = cell_contents[3:]
+    return cell_contents
 
-        # Print content from each paragraph
-        content = document.get('body', {}).get('content', [])
-        for struct in content:
-            if 'table' in struct:
-                table = struct['table']
-                for row in table.get('tableRows', []):
-                    for cell in row.get('tableCells', []):
-                        for content_item in cell.get('content', []):
-                            for element in content_item.get('paragraph', {}).get('elements', []):
-                                if 'textRun' in element:
-                                    print(element['textRun']['content'].strip())
 
-    except Exception as e:
-        print(f"Error: {str(e)}")
+def display_code(cell_contents):
+    max_x = max(cell_contents[i] for i in range(0, len(cell_contents), 3))
+    max_y = max(cell_contents[i + 2] for i in range(0, len(cell_contents), 3))
+
+    print(max_x, ' ', max_y)
+    
+    result = [[' ' for _ in range(max_x + 1)] for _ in range(max_y + 1)] 
+    # result = [[' ' for _ in range(max_x + 1)] * max_y]
+
+    for i in range(0, len(cell_contents), 3):
+        x = cell_contents[i]  
+        y = cell_contents[i + 2]  
+        content = cell_contents[i + 1]
+        result[y][x] = content
+
+    return result
 
 if __name__ == "__main__":
-    doc_url = input("Enter the Google Doc URL: ")
-    print_document_cells(doc_url)
+    cell_contents = get_document_cells('1TLfFu_HQ8uvIYyrfFuiWWUxb6yRTxG5cKW_NciGCefs')
+    code = display_code(cell_contents)
+    print(code)
