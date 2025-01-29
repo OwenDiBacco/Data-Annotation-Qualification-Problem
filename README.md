@@ -1,4 +1,8 @@
+**Introduction**
+
 As part of a qualification exam for DataAnnotation, I was instructed to read cells from the Google Doc table. Each row in the table was composed of three cells, containing an x-coordinate, a y-coordinate, and a character that would be used accordingly to map the character to a specific index in a grid. The code will then be revealed when the grid is logged. 
+
+**Approach**
 
 The approach I used to find this solution was to use a Google Docs API-enabled Service Account from the Google Cloud Console. A Service Account allows applications to communicate. In this scenario, the Service Account will allow our application to collect or send data, based on the provided permissions, to a specific Google Doc file. To connect to the Google Doc, however, we must share the Google Doc with the Service Account’s ‘client_email.’ We should configure the scope, which are permissions that define what actions our application can perform on specific resources, to have read-only access for Google Docs, based on the principle of least privilege.
 
